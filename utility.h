@@ -20,8 +20,10 @@ typedef long long l;
 
 #ifndef INC_UTILITY_H
 #define INC_UTILITY_H
-MTorrent createMtorrent(string inFile, string outFile);
+MTorrent createMtorrent(string inFile, string outFile, string track1, string track2);
 string getSHA(int inF, int outF);
+string getSHA(string hash);
+MTorrent readMtorrent(string path);
 #endif 
 
 

@@ -28,15 +28,31 @@ string getSHA(int inF, int outF){
 
 }
 
-MTorrent createMtorrent(string inFile, string outFile){
+string getSHA(string hash){
+  string result;
+  char inputB[CHUNKSIZE];
+    unsigned char oSHABuf[20];
+    char temp[2];
+    SHA1((unsigned char *)hash.c_str(), hash.size(), oSHABuf);
+      for (int i = 0; i < 20; i++) {
+          printf("%02x", oSHABuf[i]);
+         sprintf(temp,"%02x", oSHABuf[i]);
+         result+=temp;
+    }
+    return result;
+
+}
+
+
+MTorrent createMtorrent(string inFile, string outFile, string track1, string track2){
   MTorrent m;
   struct stat info;   
   if(stat(inFile.c_str(), &info)==-1){
       perror(strerror(errno));
   }
   long fsize=info.st_size;
-  string tracker1="10.42.0.394:4444\n";
-  string tracker2="10.42.0.666:5555\n";
+  string tracker1=track1+"\n";
+  string tracker2=track2+"\n";
   string fileName=inFile+"\n";
   string fileSize=to_string(fsize)+"\n";
   int inF =open(inFile.c_str(),O_RDONLY, 0);  
@@ -46,15 +62,47 @@ MTorrent createMtorrent(string inFile, string outFile){
   write(outF, fileName.c_str(), fileName.size());
   write(outF, fileSize.c_str(), fileSize.size());
   string hash=getSHA(inF,outF);
+  close(outF);
+
+  string hash2=getSHA(hash);
   m.tracker1IP=tracker1;
   m.tracker2IP=tracker2;
   m.fileName=fileName;
   m.fileSize=fileSize;
   m.hashStr=hash;
+  m.hashOfFile=hash2;
 
   close(inF);
-  close(outF);
   return m;
+}
+
+MTorrent readMtorrent(string path){
+  MTorrent m;
+  std::vector<string> v;
+  ifstream in(path);
+    if(!in) {
+        cout << "Cannot find torrent file. Please provide absolute path\n";
+        exit(1);
+    }   
+    char str[2024*512];
+    int count=0;
+    while(in) {
+        in.getline(str, 2024*512);
+        if(in) {
+            cout<<str<<endl;
+            v.push_back(str);
+        }
+    }
+    
+      m.tracker1IP=v[0];
+      m.tracker2IP=v[1];
+      m.fileName=v[2];
+      m.fileSize=v[3];
+      m.hashStr=v[4];
+      m.hashOfFile=getSHA(m.hashStr);
+    in.close();
+    
+    return m;
 }
 
 

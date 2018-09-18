@@ -37,7 +37,7 @@ int getServerSocket(string ip,string port){
         perror("bind failed"); 
         exit(EXIT_FAILURE); 
     } 
-    if (listen(server_fd, 3) < 0) 
+    if (listen(server_fd, 10) < 0) 
     { 
         perror("listen"); 
         exit(EXIT_FAILURE); 

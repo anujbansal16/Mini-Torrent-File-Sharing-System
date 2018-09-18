@@ -66,6 +66,7 @@ eg. ./client_2018201001 192.168.1.20:8754 10.42.0.394:4444 10.42.0.666:5555 ~/De
 
 eg. ./server_2018201001 10.42.0.394:4444 10.42.0.666:5555 ~/Desktop/seeders.txt ~/Desktop/mylog.log
 -----------------------
-share /home/anuj/Desktop/Semester1/2018201096-osAss2/dummy.pdf /home/anuj/Desktop/Semester1/2018201096-osAss2/dummy3.mtorrent
+share /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy.pdf dummy6.mtorrent
+share /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy.pdf abcd.mtorrent
 share ~/Desktop/Semester1/2018201096-osAss2/dummy.pdf ~/Desktop/Semester1/2018201096-osAss2/dummy.mtorrent
 share /home/anuj/Desktop/Semester1/2018201096-osAss2/dummy.pdf dummy3.mtorrent

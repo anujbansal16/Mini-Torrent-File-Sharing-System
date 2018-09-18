@@ -19,6 +19,14 @@ typedef long long l;
 
 #ifndef INC_SOCKETUTILITY_H
 #define INC_SOCKETUTILITY_H
+
+struct  ClientData
+{
+	string hash;
+	string filePath;
+	string clienAddr;
+};
+
 int getServerSocket(string ip,string port);
 #endif 
 

@@ -20,6 +20,7 @@ public:
 	string fileName;
 	string fileSize;
 	string hashStr;
+	string hashOfFile;
 	MTorrent();	
 };
 #endif 

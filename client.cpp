@@ -12,7 +12,7 @@
 using namespace std;
 
 
-string opcode,arg1,filePath,mFileName;
+string opcode,arg1,filePath,mFileName,mFilePath, destinationPath;
 // string cip,cport;
 string cipAndPort;
 string t1ip,t1port;
@@ -23,7 +23,8 @@ void readCommands(){
         cin>>mFileName;
     }
     else if(opcode=="get"){
-        cin>>arg1;
+        cin>>mFilePath;
+        cin>>destinationPath;
     }
     else{
         cout<<"Invalid operation\n";
@@ -31,7 +32,7 @@ void readCommands(){
 
 }
 
-void processCommand(int sock){
+void processCommand(int sock, string tracker1, string tracker2){
     if(opcode=="share"){
         char buffer[1024]={0};
         getcwd(buffer,1024);
@@ -39,11 +40,21 @@ void processCommand(int sock){
 
         string inFile=filePath;
         string outFile=pwd+"/"+mFileName;
-        MTorrent m=createMtorrent(inFile,outFile);
+        MTorrent m=createMtorrent(inFile,outFile, tracker1, tracker2);
         send(sock , opcode.c_str() , opcode.size() , 0 ); 
         send(sock , cipAndPort.c_str() , cipAndPort.size() , 0 ); 
         send(sock , filePath.c_str() , filePath.size() , 0 ); 
-        send(sock , m.hashStr.c_str() , m.hashStr.size() , 0 ); 
+        // send(sock , m.hashStr.c_str() , m.hashStr.size() , 0 ); 
+        send(sock , m.hashOfFile.c_str() , m.hashStr.size() , 0 ); 
+
+    }
+    if (opcode=="get")
+    {
+        MTorrent m=readMtorrent(mFilePath);
+        cout<<m.hashOfFile<<endl;
+        cout<<m.hashStr<<endl;
+        cout<<m.fileName<<endl;
+
     }
 }
 
@@ -53,7 +64,7 @@ int main(int arg, char  *args[])
     int sock = 0, valread; 
     struct sockaddr_in serv_addr; 
 
-    if (arg < 4) {
+    if (arg < 5) {
          cout<<"No Tracker ip and port provided";
          exit(1);
     }   
@@ -92,7 +103,7 @@ int main(int arg, char  *args[])
     } 
         printf("\nConnection Established \n"); 
         readCommands();
-        processCommand(sock);
+        processCommand(sock,args[2],args[3]);
         // send(sock , opcode.c_str() , opcode.size() , 0 ); 
         // FILE *fp;
         // fp = fopen("error2.txt", "wb"); 

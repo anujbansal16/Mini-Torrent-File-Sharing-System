@@ -23,7 +23,8 @@ client: $(OBJ3)
 
 .PHONY : clean
 clean :
-		-rm *.o $(objects) myTorrent
-		-rm *.o $(objects) tracker
-		-rm *.o $(objects) client
+	-rm *.o $(objects) myTorrent
+	-rm *.o $(objects) tracker
+	-rm *.o $(objects) client
+
 

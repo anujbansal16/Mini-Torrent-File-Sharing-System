@@ -20,10 +20,10 @@ COPYRIGHT PROTECTED
 using namespace std;
 
 int main(){	
-	MTorrent m;
-	string inFile="/home/anuj/Desktop/Semester1/2018201096-osAss2/dummy.pdf";
-	string outFile="/home/anuj/Desktop/Semester1/2018201096-osAss2/dummy.mtorrent";
-	m=createMtorrent(inFile,outFile);
+	// MTorrent m;
+	// string inFile="/home/anuj/Desktop/Semester1/2018201096-osAss2/dummy.pdf";
+	// string outFile="/home/anuj/Desktop/Semester1/2018201096-osAss2/dummy.mtorrent";
+	// m=createMtorrent(inFile,outFile);
  	
 	return 0;
 }
