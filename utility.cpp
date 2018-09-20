@@ -101,6 +101,7 @@ MTorrent readMtorrent(string path){
       m.hashStr=v[4];
       // cout<<m.hashStr<<endl;
       m.hashOfFile=getSHA(m.hashStr);
+      // cout<<m.hashOfFile<<endl;
       in.close();
     
     return m;

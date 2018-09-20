@@ -41,20 +41,25 @@ void processCommand(int sock, string tracker1, string tracker2){
         string inFile=filePath;
         string outFile=pwd+"/"+mFileName;
         MTorrent m=createMtorrent(inFile,outFile, tracker1, tracker2);
-        send(sock , opcode.c_str() , opcode.size() , 0 ); 
-        send(sock , cipAndPort.c_str() , cipAndPort.size() , 0 ); 
-        send(sock , filePath.c_str() , filePath.size() , 0 ); 
-        // send(sock , m.hashStr.c_str() , m.hashStr.size() , 0 ); 
-        send(sock , m.hashOfFile.c_str() , m.hashStr.size() , 0 ); 
+        string res=opcode+"|"+cipAndPort+"|"+filePath+"|"+m.hashOfFile;
+        send(sock , res.c_str() , res.size() , 0 ); 
+        // send(sock , opcode.c_str() , opcode.size() , 0 ); 
+        // send(sock , cipAndPort.c_str() , cipAndPort.size() , 0 ); 
+        // send(sock , filePath.c_str() , filePath.size() , 0 ); 
+        // // send(sock , m.hashStr.c_str() , m.hashStr.size() , 0 ); 
+        // send(sock , m.hashOfFile.c_str() , m.hashStr.size() , 0 ); 
 
     }
     if (opcode=="get")
     {
         MTorrent m=readMtorrent(mFilePath);
         string data;
-        send(sock , opcode.c_str() , 1024 , 0 ); 
-        send(sock , m.hashOfFile.c_str() ,m.hashOfFile.size() , 0 ); 
+        string res=opcode+"|"+m.hashOfFile;
+        send(sock , res.c_str() , res.size() , 0 ); 
+        // send(sock , opcode.c_str() , 1024 , 0 ); 
+        // send(sock , m.hashOfFile.c_str() ,m.hashOfFile.size() , 0 ); 
         char buffer[1024] = {0}; 
+        // int valread = read( sock , buffer, 1024); 
         while(1){
             int valread = read( sock , buffer, 1024); 
             if (valread == 0)

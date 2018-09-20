@@ -16,7 +16,7 @@ myTorrent: $(OBJ)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 tracker: $(OBJ2)
-	$(CC) $(CFLAGS) -o $@ $^ -lssl -lcrypto
+	$(CC) $(CFLAGS) -o $@ $^ -lssl -lcrypto -lpthread
 
 client: $(OBJ3)
 	$(CC) $(CFLAGS) -o $@ $^ -lssl -lcrypto
