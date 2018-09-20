@@ -35,7 +35,7 @@ string getSHA(string hash){
     char temp[2];
     SHA1((unsigned char *)hash.c_str(), hash.size(), oSHABuf);
       for (int i = 0; i < 20; i++) {
-          printf("%02x", oSHABuf[i]);
+          // printf("%02x", oSHABuf[i]);
          sprintf(temp,"%02x", oSHABuf[i]);
          result+=temp;
     }
@@ -84,12 +84,12 @@ MTorrent readMtorrent(string path){
         cout << "Cannot find torrent file. Please provide absolute path\n";
         exit(1);
     }   
-    char str[2024*512];
+    char str[1024*512];
     int count=0;
     while(in) {
-        in.getline(str, 2024*512);
+        in.getline(str, 1024*512);
         if(in) {
-            cout<<str<<endl;
+            // cout<<str<<endl;
             v.push_back(str);
         }
     }
@@ -99,8 +99,9 @@ MTorrent readMtorrent(string path){
       m.fileName=v[2];
       m.fileSize=v[3];
       m.hashStr=v[4];
+      // cout<<m.hashStr<<endl;
       m.hashOfFile=getSHA(m.hashStr);
-    in.close();
+      in.close();
     
     return m;
 }

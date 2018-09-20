@@ -51,9 +51,21 @@ void processCommand(int sock, string tracker1, string tracker2){
     if (opcode=="get")
     {
         MTorrent m=readMtorrent(mFilePath);
-        cout<<m.hashOfFile<<endl;
-        cout<<m.hashStr<<endl;
-        cout<<m.fileName<<endl;
+        string data;
+        send(sock , opcode.c_str() , 1024 , 0 ); 
+        send(sock , m.hashOfFile.c_str() ,m.hashOfFile.size() , 0 ); 
+        char buffer[1024] = {0}; 
+        while(1){
+            int valread = read( sock , buffer, 1024); 
+            if (valread == 0)
+            break;
+            if (valread == -1) {
+                perror("read");
+                exit(EXIT_FAILURE);
+            }
+            data=buffer;
+            cout<<data<<endl;
+        }
 
     }
 }
@@ -65,7 +77,7 @@ int main(int arg, char  *args[])
     struct sockaddr_in serv_addr; 
 
     if (arg < 5) {
-         cout<<"No Tracker ip and port provided";
+         cout<<"No Tracker ip and port provided\n";
          exit(1);
     }   
 

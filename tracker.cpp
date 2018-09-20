@@ -56,6 +56,26 @@ void readSeederfile(string seederFile){
     }
 }
 
+void readGetData(int sock, string seederFile){
+    cout<<"Read Get Data"<<endl;
+    while(1){
+        char buffer[1024*512]={0};
+        int valread = read( sock , buffer, 1024*512); 
+        cout<<valread<<endl;
+        if (valread == 0)
+        break;
+        cout<<buffer<<endl;
+        if (valread == -1) {
+            perror("read");
+            break;
+        }
+        for (int i = 0; i < mapHashToClient[buffer].size(); ++i)
+        {
+            send(sock , mapHashToClient[buffer][i].clienAddr.c_str() , 1024 , 0 ); 
+        }
+    }    
+}
+
 void readSocketBuff(int sock, string seederFile){
     // seederFile="seedList.txt";
     cout<<"in readSocketBuff\n";
@@ -129,10 +149,13 @@ int main(int arg, char *args[])
                 cout<<"infork\n";
                 char buffer[1024]={0};
                 int valread = read( new_socket , buffer, 1024); 
+                cout<<valread<<endl;
                 string opcode=buffer;
-                // cout<<opcode<<"\n";
                 if(opcode=="share"){
                     readSocketBuff(new_socket,args[3]);
+                }
+                if(opcode=="get"){
+                    readGetData(new_socket,args[3]);
                 }
                 close(new_socket);
                 exit(0);
