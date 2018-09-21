@@ -89,10 +89,15 @@ vector<string> readSocketBuff(int sock){
         string data=buffer;
         cout<<buffer<<endl;
         res=res+buffer;
+        char result[res.size()+2];
+        strcpy(result, res.c_str());  
+        vector<string> v=tokenize(result,"|");    
+        if(v[v.size()-1]=="end")
+            return v;
     }
-    char result[res.size()+2];
-    strcpy(result, res.c_str());  
-    return tokenize(result,"|");
+    // char result[res.size()+2];
+    // strcpy(result, res.c_str());  
+    // return tokenize(result,"|");
    
 }
 
@@ -103,8 +108,8 @@ void getF(int sock,string hash){
     {
         result=result+mapHashToClient[hash][i].clienAddr+"|";
     }
-    result=result.substr(0,result.size()-1);
-    // send(sock , result.c_str() , result.size() , 0 ); 
+    result=result+"end";
+    send(sock , result.c_str() , result.size() , 0 ); 
 }
 
 void shareF(std::vector<string> words){
@@ -139,9 +144,8 @@ void *connection_handler(void *t)
     cout<<"Connection Established"<<endl;
     struct ThreadParam *tp=(ThreadParam*)t;
     int sock=tp->sok;
-    // int sock=(int)t;
-    // string seederFile=tp->seederFile;
-    string seederFile="seedList.txt";
+    // string seederFile="seedList.txt";
+    string seederFile=tp->seederFile;
     vector<string> words=readSocketBuff(sock);
     cout<<words[0]<<endl;
     if(words[0]=="share"){
@@ -150,51 +154,6 @@ void *connection_handler(void *t)
     else if(words[0]=="get"){
         getF(sock,words[1]);
     }
-    // char buffer[1024]={0};
-    // int valread = read( sock , buffer, 1024); 
-    // cout<<valread<<endl;
-    // cout<<buffer<<endl;
-    // string opcode=buffer;
-    // cout<<opcode<<endl;
-    // if(opcode=="share"){
-        // pthread_attr_t thread_attr;
-        // int res = pthread_attr_init(&thread_attr);
-        // if (res != 0) {
-        //     perror("Attribute creation failed");
-        //     exit(EXIT_FAILURE);
-        // }
-        // res = pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
-        // if (res != 0) {
-        //     perror("Setting detached attribute failed");
-        //     exit(EXIT_FAILURE);
-        // }
-        // cout<<"adadadd"<<endl;
-        // t1=(struct ThreadParam*)malloc(sizeof(struct ThreadParam));
-        // t1->sok=new_socket;
-        // t1->seederFile="seedList.txt";
-        // cout<<"xx"<<endl;
-        // pthread_create(&thrd, &thread_attr, readSocketBuff, (void *)t1);
-        // cout<<"share"<<endl;
-        // readSocketBuff(sock,seederFile);
-    // }
-    // if(opcode=="get"){
-        // pthread_t thrd;
-        // pthread_attr_t thread_attr;
-        // int res = pthread_attr_init(&thread_attr);
-        // if (res != 0) {
-        //     perror("Attribute creation failed");
-        //     exit(EXIT_FAILURE);
-        // }
-        // res = pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
-        // if (res != 0) {
-        //     perror("Setting detached attribute failed");
-        //     exit(EXIT_FAILURE);
-        // }
-        // struct ThreadParam *t=(struct ThreadParam*)malloc(sizeof(struct ThreadParam));
-        // t->sok=new_socket;
-        // pthread_create(&thrd, &thread_attr, readGetData, (void *)t); 
-        // readGetData(sock);
-    // }
     pthread_exit(NULL);
 
 
@@ -228,10 +187,7 @@ int main(int arg, char *args[])
         { 
             perror("accept"); 
             exit(EXIT_FAILURE); 
-        } 
-        
-        
-        cout<<"acce"<<endl;
+        }         
         ThreadParam t; //*t=(struct ThreadParam*)malloc(sizeof(struct ThreadParam));
         t.sok=new_socket;
         t.seederFile=args[3];
