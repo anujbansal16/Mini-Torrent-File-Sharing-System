@@ -72,4 +72,7 @@ share ~/Desktop/Semester1/2018201096-osAss2/dummy.pdf ~/Desktop/Semester1/201820
 share /home/anuj/Desktop/Semester1/2018201096-osAss2/dummy.pdf dummy3.mtorrent
 
 /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy.mtorrent 
-get /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy6.mtorrent adad  
+get /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy6.mtorrent adad 
+
+./client 127.0.0.1:8082 127.0.0.1:8081 adbad.adad addddad
+./tracker 127.0.0.1:8081 adbad.adad seedList.txt bansal

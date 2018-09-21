@@ -56,6 +56,10 @@ MTorrent createMtorrent(string inFile, string outFile, string track1, string tra
   string fileName=inFile+"\n";
   string fileSize=to_string(fsize)+"\n";
   int inF =open(inFile.c_str(),O_RDONLY, 0);  
+  if(inF<0){
+    cout<<"FAILURE: FILE_NOT_FOUND"<<endl;
+    exit(0);
+  }
   int outF = open(outFile.c_str(), O_WRONLY | O_CREAT , 0664);  
   write(outF, tracker1.c_str(), tracker1.size());
   write(outF, tracker2.c_str(), tracker2.size());
@@ -81,7 +85,7 @@ MTorrent readMtorrent(string path){
   std::vector<string> v;
   ifstream in(path);
     if(!in) {
-        cout << "Cannot find torrent file. Please provide absolute path\n";
+        cout << "FAILURE: MTORRENT_FILE_NOT_FOUND "<<endl;
         exit(1);
     }   
     char str[1024*512];

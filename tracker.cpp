@@ -141,12 +141,15 @@ void shareF(std::vector<string> words){
 
 void *connection_handler(void *t)
 {
-    cout<<"Connection Established"<<endl;
+    while(true){
+    cout<<"Connection Established\n";
     struct ThreadParam *tp=(ThreadParam*)t;
     int sock=tp->sok;
     // string seederFile="seedList.txt";
     string seederFile=tp->seederFile;
     vector<string> words=readSocketBuff(sock);
+    if(words.size()==0)
+        break;
     cout<<words[0]<<endl;
     if(words[0]=="share"){
         shareF(words);
@@ -154,8 +157,12 @@ void *connection_handler(void *t)
     else if(words[0]=="get"){
         getF(sock,words[1]);
     }
-    pthread_exit(NULL);
-
+    else if(words[0]=="exit"){
+        close(sock);
+        break;
+    }
+    cout<<"Done"<<endl;
+}
 
 }
 
@@ -179,33 +186,35 @@ int main(int arg, char *args[])
     int count=0;
     readSeederfile(args[3]);
     string seederFile=args[3];
-    struct ThreadParam *t1;
     pthread_t thrd;
-    cout<<"acce"<<endl;
     while(true){
+        cout<<"Waiting for client Request"<<endl;
         if ((new_socket = accept(server_fd, (struct sockaddr *)&CAddress,(socklen_t*)&addrlen))<0) 
         { 
             perror("accept"); 
             exit(EXIT_FAILURE); 
         }         
-        ThreadParam t; //*t=(struct ThreadParam*)malloc(sizeof(struct ThreadParam));
+        ThreadParam t;
         t.sok=new_socket;
         t.seederFile=args[3];
 
-        if( pthread_create( &thrd , NULL ,  connection_handler , &t) < 0)
+        pthread_attr_t thread_attr;
+        int res = pthread_attr_init(&thread_attr);
+        if (res != 0) {
+            perror("Attribute creation failed");
+            exit(EXIT_FAILURE);
+        }
+        res = pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
+        if (res != 0) {
+            perror("Setting detached attribute failed");
+            exit(EXIT_FAILURE);
+        }
+
+        if( pthread_create( &thrd , &thread_attr ,  connection_handler , &t) < 0)
         {
             perror("could not create thread");
             return 1;
         }
-        // if(fork() == 0) {
-                
-                
-                // close(new_socket);
-                // exit(0);
-        // }
-        // else{
-                // close(new_socket);
-         // }
     }
     return 0; 
 } 

@@ -28,6 +28,7 @@ struct  ClientData
 };
 
 int getServerSocket(string ip,string port);
+int getClientSocket(string ip,string port);
 #endif 
 
 

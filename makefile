@@ -5,7 +5,7 @@ DEPS =classes.h utility.h
 OBJ = main.o classes.o utility.o
 DEPS2 = socketUtility.h 
 OBJ2 = tracker.o socketUtility.o classes.o utility.o
-OBJ3 = client.o classes.o utility.o
+OBJ3 = client.o socketUtility.o classes.o utility.o
 %.o: %.cpp $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -19,7 +19,7 @@ tracker: $(OBJ2)
 	$(CC) $(CFLAGS) -o $@ $^ -lssl -lcrypto -lpthread
 
 client: $(OBJ3)
-	$(CC) $(CFLAGS) -o $@ $^ -lssl -lcrypto
+	$(CC) $(CFLAGS) -o $@ $^ -lssl -lcrypto -lpthread
 
 .PHONY : clean
 clean :
