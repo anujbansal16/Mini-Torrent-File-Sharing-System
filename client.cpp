@@ -17,6 +17,13 @@ struct ClientThreadParam
     char** args;
 };
 
+struct seederIPPortInfo
+{
+    string seederIP;
+    string seederPort;
+    string filePath;
+};
+
 vector<string> tokenize(char inputBuffer[], string token){
     vector<string> words;
     char* word = strtok(inputBuffer, token.c_str());
@@ -27,6 +34,53 @@ vector<string> tokenize(char inputBuffer[], string token){
     return words;
 }
 
+void *createPeerClient(void *t){
+    cout<<"Create Peer Client"<<endl;
+    seederIPPortInfo *st=(seederIPPortInfo *)t;
+    string seederIP=st->seederIP;
+    // cout<<"check-"<<seederIP<<endl;
+    // cout<<"check2"<<st->seederPort<<endl;
+    string seederPort=st->seederPort;
+    cout<<"check2"<<seederPort<<endl;
+    string filePath=st->filePath;
+    cout<<"check3"<<filePath<<endl;
+    // int peerClientSock=getClientSocket(seederIP,seederPort);
+
+    // close(peerClientSock);
+
+}
+
+
+void createPeerClientThread(string seederIP, string seederPort,string filePath){
+    cout<<"Inside createPeerClientThread"<<endl;
+    pthread_t thrd;
+    pthread_attr_t thread_attr;
+    int res = pthread_attr_init(&thread_attr);
+    if (res != 0) {
+        perror("Attribute creation failed");
+        exit(EXIT_FAILURE);
+    }
+    /*res = pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
+    if (res != 0) {
+        perror("Setting detached attribute failed");
+        exit(EXIT_FAILURE);
+    }*/
+
+    seederIPPortInfo t;
+    t.seederIP=seederIP;
+    t.seederPort=seederPort;
+    t.filePath=filePath;
+    cout<<"1st "<<t.seederIP<<endl;
+    cout<<"2nd "<<t.seederPort<<endl;
+
+    if( pthread_create( &thrd , NULL ,  createPeerClient , &t) < 0)
+    {
+        perror("could not create thread");
+    }
+    usleep(300000);
+    // pthread_join(thrd,NULL);
+
+}
 
 void processCommand(int sock,string opcode, string tracker1, string tracker2, string filePath,string mFileName, string mFilePath, string cipAndPort){
     if(opcode=="share"){
@@ -70,16 +124,20 @@ void processCommand(int sock,string opcode, string tracker1, string tracker2, st
             if(v[v.size()-1]=="end")
                break;
         }
-        for (int i = 0; i < v.size()-1; ++i)
+        for (int i = 0; i < v.size()-1; i+=2)
         {
             cout<<v[i]<<endl;
+            string seederIPAndPort = v[i];
+            int pos=seederIPAndPort.find(":");
+            string seederIP = seederIPAndPort.substr(0, pos); 
+            string seederPort = seederIPAndPort.substr(pos+1,seederIPAndPort.size()); 
+            string filePath=v[i+1];
+            cout<<filePath<<endl;
+            createPeerClientThread(seederIP,seederPort,filePath);
+            // int peerClientSock=getClientSocket(seederIP,seederPort);
         }
         //create sockets each in a new thread
-        string seederIPAndPort = v[0];
-        int pos=seederIPAndPort.find(":");
-        string seederIP = seederIPAndPort.substr(0, pos); 
-        string seederPort = seederIPAndPort.substr(pos+1,seederIPAndPort.size()); 
-        int peerClientSock=getClientSocket(seederIP,seederPort);
+        
 
     }
     if(opcode=="exit"){

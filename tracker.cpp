@@ -8,8 +8,16 @@
 #include <arpa/inet.h>
 #include <fstream>
 #include "socketUtility.h"
-#define PORT 8080 
+#include <fstream>
 using namespace std;
+
+string log_file;
+void write_to_log_file( const std::string &text )
+{
+    ofstream logfile(log_file, std::ios_base::out | std::ios_base::app );
+    logfile<<text<<endl;
+}
+
 struct ThreadParam
 {
     int sok;
@@ -107,6 +115,7 @@ void getF(int sock,string hash){
     for (int i = 0; i < mapHashToClient[hash].size(); ++i)
     {
         result=result+mapHashToClient[hash][i].clienAddr+"|";
+        result=result+mapHashToClient[hash][i].filePath+"|";
     }
     result=result+"end";
     send(sock , result.c_str() , result.size() , 0 ); 
@@ -175,7 +184,9 @@ int main(int arg, char *args[])
          cout<<"No Tracker ip and port provided";
          exit(1);
     }
+    log_file=args[4];
     cout<<"main"<<endl;
+    write_to_log_file("main");
     //getting ip and port
     string ip,port;
     string idAndPort = args[1];
