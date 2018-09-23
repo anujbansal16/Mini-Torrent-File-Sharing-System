@@ -55,13 +55,14 @@ int getClientSocket(string ip,string port){
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
     { 
         printf("\nClient Socket creation error \n"); 
-        // return -1; 
+        return -1; 
         // thread_exit(NULL);
     } 
     int opt=1;
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR , &opt, sizeof(opt))) 
     { 
         perror("setsockopt"); 
+        return -1;
         // exit(EXIT_FAILURE); 
     } 
 
@@ -73,14 +74,14 @@ int getClientSocket(string ip,string port){
     if(inet_pton(AF_INET, ip.c_str(), &serv_addr.sin_addr)<=0)  
     { 
         printf("\nInvalid address/ Address not supported \n"); 
-        // return -1; 
+        return -1; 
         // exit(EXIT_FAILURE); 
     } 
    
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
     { 
         printf("\nConnection Failed \n"); 
-        // return -1; 
+        return -1; 
         // exit(EXIT_FAILURE); 
     } 
     printf("\nConnection Established \n"); 

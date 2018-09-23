@@ -9,13 +9,21 @@
 #include <fstream>
 #include "socketUtility.h"
 #include <fstream>
+#include <mutex>
 using namespace std;
-
+std::mutex mtx;      
 string log_file;
 void write_to_log_file( const std::string &text )
 {
+    //mutex to applied
+    mtx.lock();
     ofstream logfile(log_file, std::ios_base::out | std::ios_base::app );
-    logfile<<text<<endl;
+    time_t now;
+    time(&now);
+    char *date=ctime(&now);
+    date[strlen(date)-1]='\0';
+    logfile<<date<<" "<<text<<endl;  
+    mtx.unlock();
 }
 
 struct ThreadParam

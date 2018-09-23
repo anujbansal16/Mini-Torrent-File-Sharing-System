@@ -68,11 +68,16 @@ eg. ./server_2018201001 10.42.0.394:4444 10.42.0.666:5555 ~/Desktop/seeders.txt 
 -----------------------
 share /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy.pdf dummy6.mtorrent
 share /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy.pdf abcd.mtorrent
+share /home/anuj/Desktop/Semester1/2018201096-osAss2/Parmanu2018.mkv per.mtorrent
 share ~/Desktop/Semester1/2018201096-osAss2/dummy.pdf ~/Desktop/Semester1/2018201096-osAss2/dummy.mtorrent
 share /home/anuj/Desktop/Semester1/2018201096-osAss2/dummy.pdf dummy3.mtorrent
+share /home/anuj/Desktop/Semester1/2018201096-osAss2/phli.mp3 phli.mtorrent
 
 /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy.mtorrent 
-get /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy6.mtorrent adad 
+get /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy6.mtorrent /home/anuj/Desktop
+get /home/anuj/Desktop/Git-Stuff/MiniTorrent/per.mtorrent /home/anuj/Desktop
+get /home/anuj/Desktop/Git-Stuff/MiniTorrent/phli.mtorrent /home/anuj/Desktop
 
-./client 127.0.0.1:8082 127.0.0.1:8081 adbad.adad addddad
-./tracker 127.0.0.1:8081 adbad.adad seedList.txt bansal
+./client 127.0.0.1:8082 127.0.0.1:8081 adbad.adad mylogs.txt
+./tracker 127.0.0.1:8081 adbad.adad seedList.txt mylogs.txt	
+/home/anuj/Desktop/

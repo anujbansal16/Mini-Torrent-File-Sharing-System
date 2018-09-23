@@ -11,20 +11,6 @@
 #include "socketUtility.h"
 #define CHUNK 1024*512
 using namespace std;
-std::mutex mtx;      
-string log_file;
-void write_to_log_file( const std::string &text )
-{
-    //mutex to applied
-    mtx.lock();
-    ofstream logfile(log_file, std::ios_base::out | std::ios_base::app );
-    time_t now;
-    time(&now);
-    char *date=ctime(&now);
-    date[strlen(date)-1]='\0';
-    logfile<<date<<" "<<text<<endl;  
-    mtx.unlock();
-}
 struct ClientThreadParam
 {
     int arg;
@@ -39,8 +25,6 @@ struct seederIPPortInfo
     string destinationPath;
     MTorrent m;
     int noofSeeders;
-    long mynoofchunks;
-    long start;
 };
 
 vector<string> tokenize(char inputBuffer[], string token){
@@ -61,8 +45,6 @@ void *createPeerClient(void *t){
     string seederPort=st->seederPort;
     string filePath=st->filePath;
     string destinationPath=st->destinationPath;
-    long mynoofchunks=st->mynoofchunks;
-    long start=st->start;
     MTorrent m=st->m;
     int noofSeeders=st->noofSeeders;
     cout<<"seederIP "<<seederIP<<endl;
@@ -70,10 +52,8 @@ void *createPeerClient(void *t){
     cout<<"filePath "<<filePath<<endl;
     cout<<"destinationPath "<<destinationPath<<endl;
     cout<<"noofSeeders "<<noofSeeders<<endl;
-    cout<<"mynoofchunks "<<mynoofchunks<<endl;
-    cout<<"start "<<start<<endl;
+    string res=filePath+"|"+"end";
 
-    string res=filePath+"|"+to_string(start)+"|"+to_string(mynoofchunks)+"|"+"end";
     size_t pos = filePath.rfind("/", filePath.length());
     if (pos != string::npos) {
         fileName=(filePath.substr(pos+1, filePath.length() - pos));
@@ -84,11 +64,10 @@ void *createPeerClient(void *t){
     if(peerClientSock==-1)
         pthread_exit(NULL);
     send(peerClientSock, res.c_str(), res.size() , 0);
-
+    
     //reading sent data
-    FILE *fp;
-    fp = fopen((destinationPath+"/"+fileName).c_str(), "ab"); 
-    fseek ( fp , start*CHUNK , SEEK_SET);
+    // FILE *fp;
+    // fp = fopen((destinationPath+"/"+fileName).c_str(), "wb"); 
     char buffer[1024*512] = {0}; 
     while(1){
         cout<<"Downloading.."<<seederPort<<endl;
@@ -100,10 +79,10 @@ void *createPeerClient(void *t){
             perror("read");
             exit(EXIT_FAILURE);
         }
-        if (fwrite(buffer,1, valread,fp) == -1) {
+        /*if (fwrite(buffer,1, valread,fp) == -1) {
             perror("write");
             exit(EXIT_FAILURE);
-        }
+        }*/
     }
     
 
@@ -132,22 +111,15 @@ void createPeerClientThread(seederIPPortInfo sd){
         perror("could not create thread");
     }
     usleep(50000);
+    // thread t (createPeerClient, &sd);
 
 }
 
 void createAllPeerConnections(seederIPPortInfo seedersList[], int noofSeeders, MTorrent m){
     int fileSize = atoi(m.fileSize.c_str());
-    int noofChunks=ceil(1.0*fileSize/(CHUNK));
-    int chunksPerseeeder=(noofChunks/noofSeeders);
-    int lastAdditionalChunks=noofChunks-chunksPerseeeder*noofSeeders;
-    cout<<" "<<noofChunks<<chunksPerseeeder<<" "<<lastAdditionalChunks<<endl;
+    int noofChunks=fileSize/(CHUNK);
     for (int i = 0; i < noofSeeders; ++i)
     {
-
-        seedersList[i].mynoofchunks=chunksPerseeeder;
-        seedersList[i].start=i*chunksPerseeeder;
-        if(i==noofSeeders-1)
-            seedersList[i].mynoofchunks+=lastAdditionalChunks;
         createPeerClientThread(seedersList[i]);
     }
 
@@ -347,21 +319,16 @@ void * connection_handler(void *t){
             }
     }
     FILE *fp = fopen(v[0].c_str(),"rb");
-    long start=atoi(v[1].c_str());
-    fseek ( fp , start*CHUNK , SEEK_SET );
-    long mynoofchunks=atoi(v[2].c_str());
     size_t size;
-    while (mynoofchunks>0 && (size = fread( inputB,1, 1024*512,fp)) > 0) {
-        cout<<size<<" "<<mynoofchunks<<"\n";
-        send(sock , inputB , size, 0);     
-        mynoofchunks--;
+    while ((size = fread( inputB,1, 1024*512,fp)) > 0) {
+        cout<<size<<"\n";
+        write(sock , inputB , size );     
     }       
     // close(new_socket);
 }
 
 void *makeMyServer(void *t){
     cout<<"Created makeMyServer"<<endl;
-    write_to_log_file("Created makeMyServer");
     ClientThreadParam *ct=(ClientThreadParam *)t;
     int arg=ct->arg;
     char ** args=ct->args;
@@ -410,13 +377,6 @@ void *makeMyServer(void *t){
 
 int main(int arg, char  *args[]) 
 { 
-     if (arg < 5) {
-         cout<<"No Tracker ip and port provided\n";
-         exit(1);
-    }   
-
-    log_file=args[4];
-
     pthread_t thrd;
     ClientThreadParam t;
     t.arg=arg;
@@ -455,6 +415,8 @@ int main(int arg, char  *args[])
         perror("could not create thread");
         return 1;
     }
+
+    cout<<"gone"<<endl;
     while(1);
     return 0; 
 } 
