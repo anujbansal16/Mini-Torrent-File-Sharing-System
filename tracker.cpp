@@ -1,3 +1,10 @@
+/***********************************************************
+
+OWNER:  ANUJ BANSAL
+ROLLNO. 2018201096
+COPYRIGHT PROTECTED
+Tracker Functionality
+***********************************************************/
 #include <bits/stdc++.h> 
 #include <unistd.h>
 #include <sys/socket.h> 
@@ -13,26 +20,31 @@
 using namespace std;
 std::mutex mtx;      
 string log_file;
+
+//function writing in log file
 void write_to_log_file( const std::string &text )
 {
-    //mutex to applied
     mtx.lock();
     ofstream logfile(log_file, std::ios_base::out | std::ios_base::app );
     time_t now;
     time(&now);
     char *date=ctime(&now);
     date[strlen(date)-1]='\0';
-    logfile<<date<<" "<<text<<endl;  
+    logfile<<date<<" "<<"SERVER/TRACKER "<<text<<endl;  
     mtx.unlock();
 }
 
+//Struct to pass data in multithreading routines 
 struct ThreadParam
 {
     int sok;
     string seederFile;
 };
+
+//map of hashString vs list of Associated Clients
 static map<string,vector<ClientData>> mapHashToClient;
 
+//function that tokenize steam of data using token as delimiter
 vector<string> tokenize(char inputBuffer[], string token){
     vector<string> words;
     char* word = strtok(inputBuffer, token.c_str());
@@ -42,6 +54,8 @@ vector<string> tokenize(char inputBuffer[], string token){
     }  
     return words;
 }
+
+//construct struct of client data from array of data seperated by |
 ClientData getClientData(char inputBuffer[], string token){
   vector<string> words;
   char* word = strtok(inputBuffer, token.c_str());
@@ -56,15 +70,16 @@ ClientData getClientData(char inputBuffer[], string token){
     return c;
 }
 
+//Function reading seeder file, throw error if not exist
 void readSeederfile(string seederFile){
-    cout<<"in read readSeederfile\n";
-    // seederFile="seedList.txt";
-    FILE *fp;  
-    char buff[1024];
+    // cout<<"in read readSeederfile\n";
+    write_to_log_file("In readSeederfile");
+    // FILE *fp;  
+    // char buff[1024];
     ClientData c;    
     ifstream in(seederFile);
     if(!in) {
-        cout << "Cannot open seederFile file.\n";
+        cout << "Cannot open seederFile file. SeederFile not exist.\n";
         exit(1);
     }   
     char str[1024];
@@ -79,23 +94,27 @@ void readSeederfile(string seederFile){
     in.close();
     for (auto i= mapHashToClient.begin(); i != mapHashToClient.end(); ++i)
     {   
-        cout<<i->first<<endl;
+        // cout<<i->first<<endl;
+        write_to_log_file("readSeederfile: HashOfFile "+i->first);
         for (vector<ClientData>::iterator j = i->second.begin(); j != i->second.end(); ++j)
         {
-                cout<<(*j).clienAddr<<endl;
+                // cout<<(*j).clienAddr<<endl;
+                write_to_log_file("readSeederfile: Client Address "+(*j).clienAddr);
         }
     }
 }
 
-
+//Function reading the input of socket(| seperated) and convert it into vector
 vector<string> readSocketBuff(int sock){
-    cout<<"In read socket buffer"<<endl;
+    // cout<<"In read socket buffer"<<endl;
+    write_to_log_file("In readSocketBuff");
     string res;
+    vector<string> v;
     while(1){
-        cout<<"here"<<endl;
         char buffer[1024*512]={0};
         int valread = read( sock , buffer, 1024*512);
-        cout<<valread<<endl; 
+        // cout<<valread<<endl; 
+        write_to_log_file("readSocketBuff: "+to_string(valread));
         if (valread == 0)
         break;
         if (valread == -1) {
@@ -103,24 +122,25 @@ vector<string> readSocketBuff(int sock){
             break;
         }
         string data=buffer;
-        cout<<buffer<<endl;
+        // cout<<buffer<<endl;
+        write_to_log_file("readSocketBuff: buffer");
         res=res+buffer;
         char result[res.size()+2];
         strcpy(result, res.c_str());  
-        vector<string> v=tokenize(result,"|");    
+        v=tokenize(result,"|");    
         if(v[v.size()-1]=="end")
             return v;
     }
-    // char result[res.size()+2];
-    // strcpy(result, res.c_str());  
-    // return tokenize(result,"|");
-   
+    return v;
 }
 
+
+//function handling the GET request of client
 void getF(int sock,string hash){
-    cout<<"In Get"<<endl;
+    cout<<"Get File"<<endl;
+    write_to_log_file("In getF");
     string result;
-    for (int i = 0; i < mapHashToClient[hash].size(); ++i)
+    for (unsigned int i = 0; i < mapHashToClient[hash].size(); ++i)
     {
         result=result+mapHashToClient[hash][i].clienAddr+"|";
         result=result+mapHashToClient[hash][i].filePath+"|";
@@ -129,58 +149,64 @@ void getF(int sock,string hash){
     send(sock , result.c_str() , result.size() , 0 ); 
 }
 
-void shareF(std::vector<string> words){
-    cout<<"In share"<<endl;
+//function handling the SHARE request of client
+void shareF(std::vector<string> words, string seederFile){
+    cout<<"Sharing File"<<endl;
+    write_to_log_file("In shareF");
     FILE *fp;
-    string seederFile="seedList.txt";
     ClientData c;
     c.hash=words[3];
     c.filePath=words[2];
     c.clienAddr=words[1];
     mapHashToClient[c.hash].push_back(c);
     fp = fopen(seederFile.c_str(), "ab"); 
-    cout<<"here"<<endl;
     fprintf(fp,"%s|", words[3].c_str());
     fprintf(fp,"%s|", words[2].c_str());
     fprintf(fp,"%s|", words[1].c_str());
     fprintf(fp,"\n");//endl
     fclose(fp);
-    // readSeederfile("");
     for (auto i= mapHashToClient.begin(); i != mapHashToClient.end(); ++i)
     {   
-        cout<<i->first<<endl;
+        // cout<<i->first<<endl;
+        write_to_log_file("shareF: HashOfFile "+i->first );
         for (vector<ClientData>::iterator j = i->second.begin(); j != i->second.end(); ++j)
         {
-                cout<<(*j).clienAddr<<endl;
+                // cout<<(*j).clienAddr<<endl;
+                write_to_log_file("shareF: Client Address "+ (*j).clienAddr);
         }
     }
 }
 
+//thread routine called when new socket connection is made
 void *connection_handler(void *t)
 {
+    cout<<"Connected"<<endl;
+    write_to_log_file("In connection_handler");
     while(true){
-    cout<<"Connection Established\n";
+    // cout<<"Connection Established\n";
+    write_to_log_file("Connection Established");
     struct ThreadParam *tp=(ThreadParam*)t;
     int sock=tp->sok;
-    // string seederFile="seedList.txt";
     string seederFile=tp->seederFile;
     vector<string> words=readSocketBuff(sock);
     if(words.size()==0)
         break;
-    cout<<words[0]<<endl;
+    // cout<<words[0]<<endl;
+    write_to_log_file("connection_handler: opcode "+ words[0]);
     if(words[0]=="share"){
-        shareF(words);
+        shareF(words,seederFile);
     }
     else if(words[0]=="get"){
         getF(sock,words[1]);
     }
     else if(words[0]=="exit"){
+        cout<<"Exiting client"<<endl;
+        write_to_log_file("connection_handler: Exiting client");
         close(sock);
         break;
     }
-    cout<<"Done"<<endl;
 }
-
+pthread_exit(NULL);
 }
 
 int main(int arg, char *args[]) 
@@ -193,8 +219,8 @@ int main(int arg, char *args[])
          exit(1);
     }
     log_file=args[4];
-    cout<<"main"<<endl;
-    write_to_log_file("main");
+    // cout<<"main"<<endl;
+    write_to_log_file("In main");
     //getting ip and port
     string ip,port;
     string idAndPort = args[1];
@@ -202,12 +228,13 @@ int main(int arg, char *args[])
     ip = idAndPort.substr(0, pos); 
     port = idAndPort.substr(pos+1,idAndPort.size()); 
     int server_fd=getServerSocket(ip,port);
-    int count=0;
     readSeederfile(args[3]);
     string seederFile=args[3];
     pthread_t thrd;
+    cout<<"Tracker Started "<<endl;
     while(true){
-        cout<<"Waiting for client Request"<<endl;
+        write_to_log_file("Main: Tracker Started ");
+        write_to_log_file("Main: Waiting for client Request ");
         if ((new_socket = accept(server_fd, (struct sockaddr *)&CAddress,(socklen_t*)&addrlen))<0) 
         { 
             perror("accept"); 
@@ -215,8 +242,7 @@ int main(int arg, char *args[])
         }         
         ThreadParam t;
         t.sok=new_socket;
-        t.seederFile=args[3];
-
+        t.seederFile=seederFile;
         pthread_attr_t thread_attr;
         int res = pthread_attr_init(&thread_attr);
         if (res != 0) {

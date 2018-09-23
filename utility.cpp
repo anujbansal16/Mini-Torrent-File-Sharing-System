@@ -3,12 +3,14 @@
 OWNER:  ANUJ BANSAL
 ROLLNO. 2018201096
 COPYRIGHT PROTECTED
+Utility Functions
 ***********************************************************/
 #include"utility.h"
 #include "classes.h"
 #define CHUNKSIZE 1024*512
 typedef long long l;
 
+//functions take sha of input file (inF) and write sha of InF in outF
 string getSHA(int inF, int outF){
   string result;
   char inputB[CHUNKSIZE];
@@ -28,6 +30,7 @@ string getSHA(int inF, int outF){
 
 }
 
+//return sha of a string (hash)
 string getSHA(string hash){
   string result;
   char inputB[CHUNKSIZE];
@@ -43,7 +46,7 @@ string getSHA(string hash){
 
 }
 
-
+//create mtorrent file and return mtorrent class object
 MTorrent createMtorrent(string inFile, string outFile, string track1, string track2){
   MTorrent m;
   struct stat info;   
@@ -79,7 +82,7 @@ MTorrent createMtorrent(string inFile, string outFile, string track1, string tra
   close(inF);
   return m;
 }
-
+//read mtorrent file
 MTorrent readMtorrent(string path){
   MTorrent m;
   std::vector<string> v;
@@ -89,7 +92,7 @@ MTorrent readMtorrent(string path){
         exit(1);
     }   
     char str[1024*512];
-    int count=0;
+    // int count=0;
     while(in) {
         in.getline(str, 1024*512);
         if(in) {

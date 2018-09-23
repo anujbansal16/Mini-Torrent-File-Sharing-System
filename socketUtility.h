@@ -20,6 +20,7 @@ typedef long long l;
 #ifndef INC_SOCKETUTILITY_H
 #define INC_SOCKETUTILITY_H
 
+//client data 
 struct  ClientData
 {
 	string hash;

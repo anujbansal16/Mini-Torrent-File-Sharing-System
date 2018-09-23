@@ -1,6 +1,6 @@
 #include "socketUtility.h"
 
-
+//creates server socket
 int getServerSocket(string ip,string port){
     int server_fd; 
     struct sockaddr_in address; 
@@ -47,7 +47,7 @@ int getServerSocket(string ip,string port){
 }
 
 
-
+//creates client socket
 int getClientSocket(string ip,string port){
     int sock = 0;
     int portno = atoi(port.c_str());
@@ -84,7 +84,6 @@ int getClientSocket(string ip,string port){
         return -1; 
         // exit(EXIT_FAILURE); 
     } 
-    printf("\nConnection Established \n"); 
     return sock;
 
 }

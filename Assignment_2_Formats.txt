@@ -72,11 +72,13 @@ share /home/anuj/Desktop/Semester1/2018201096-osAss2/Parmanu2018.mkv per.mtorren
 share ~/Desktop/Semester1/2018201096-osAss2/dummy.pdf ~/Desktop/Semester1/2018201096-osAss2/dummy.mtorrent
 share /home/anuj/Desktop/Semester1/2018201096-osAss2/dummy.pdf dummy3.mtorrent
 share /home/anuj/Desktop/Semester1/2018201096-osAss2/phli.mp3 phli.mtorrent
+share /home/anuj/Desktop/Semester1/2018201096-osAss2/1.png 1.mtorrent
 
 /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy.mtorrent 
 get /home/anuj/Desktop/Git-Stuff/MiniTorrent/dummy6.mtorrent /home/anuj/Desktop
 get /home/anuj/Desktop/Git-Stuff/MiniTorrent/per.mtorrent /home/anuj/Desktop
 get /home/anuj/Desktop/Git-Stuff/MiniTorrent/phli.mtorrent /home/anuj/Desktop
+get /home/anuj/Desktop/Git-Stuff/MiniTorrent/1.mtorrent /home/anuj/Desktop
 
 ./client 127.0.0.1:8082 127.0.0.1:8081 adbad.adad mylogs.txt
 ./tracker 127.0.0.1:8081 adbad.adad seedList.txt mylogs.txt	
