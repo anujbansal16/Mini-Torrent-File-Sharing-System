@@ -7,6 +7,7 @@ Notes:
   * Provide absolute paths wherever the path is required.(in share functionality only give mtorrent file name which gets created in present working directory)
   * Assuming seeders always have complete file
   * Algorithm divides total number of chunks amongs the number of seeders(ie if 2 seeders are there then each contribute half number of chunks) 
+  * **No spaces anywhere in filename/directoryname**
 
 Working Files:
   * classes.h utility.h socketUtility.h 
