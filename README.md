@@ -1,5 +1,5 @@
 # Mini-Torrent-File-Sharing-System
-Mini torrent
+A functional torrent system which includes a peer-to-peer file sharing protocol to reduce the bandwidth required to transfer files compared to that of in a traditional client-server architecture. 
 
 Notes:
 <!--* Do not press **Ctrl+C** else server get disconnected , instead type **exit**-->
